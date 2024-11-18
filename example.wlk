@@ -7,8 +7,8 @@ object pepita {
     energy = energy - minutes * 3
   }
 }
-object mision{
-  const property habilidadesNec = []
+class Mision{
+  const property habilidadesNec = #{} //No se puede repetir
   var property peligrosidad = 1
 
 
@@ -29,20 +29,19 @@ object mision{
   method habilidadesQueNoPosee(empleado) = habilidadesNec.filter({hab=>not (empleado.poseeHabilidad(hab))})
 }
 
-object equipo{
+class Equipo{
   const property integrantes = []
 
   method puedeUsarHabilidad(hab) =  integrantes.any({integrante=>integrante.puedeUsarHabilidad(hab)})
 
   method recibirDanio(peligrosidad){
-    integrantes.forEach({integrante=>integrante.salud -= 0.3 * mision.peligrosidad})
+    integrantes.forEach({empleado => empleado.recibirDanio(peligrosidad / 3)})
   }
 
-  method completarMision(mision){}
-
-  method perderVida(){
-
+  method completarMision(mision){
+    integrantes.forEach({empleado=>empleado.completarMision()})
   }
+
 }
 
 class Empleado{
@@ -65,10 +64,10 @@ class Empleado{
     if(salud>0){puesto.premio(mision)}
   }
 
-  method aprenderHabilidad(){
-
+  method aprenderHabilidad(hab){
+    habilidad.add(hab)
   }
-
+ 
   
 }
 
@@ -90,9 +89,14 @@ var property cantEstrellas = 0
 
 method saludCritica() = 40 - 5 * cantEstrellas
 
-method premio(mision){cantEstrellas += 1}
+method premio(mision, empleado){
+  cantEstrellas += 1
+  if(cantEstrellas == 3){
+    empleado.puesto(puestoEspia)
+  }
+}
 
-//method cambioPuesto(empleado) {if(self.cantEstrellas()==3){empleado.puesto = puestoEspia}}
+
 }
 
 class Jefe inherits Empleado{
